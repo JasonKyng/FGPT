@@ -65,28 +65,6 @@ python -m pip install torch==2.1.0 torchvision==0.16.0 \
   --index-url https://download.pytorch.org/whl/cu118
 ```
 
-Install the remaining dependencies using a temporary requirements file that corrects the torchvision pin and includes the imported `einops` package:
-
-```bash
-python - <<'PY'
-from pathlib import Path
-import tempfile
-import subprocess
-import sys
-
-requirements = Path("requirements.txt").read_text()
-requirements = requirements.replace("torchvision==0.15.1", "torchvision==0.16.0")
-with tempfile.TemporaryDirectory() as directory:
-    path = Path(directory) / "requirements.txt"
-    path.write_text(requirements.rstrip() + "\neinops\n")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", str(path)])
-PY
-
-python -m pip check
-```
-
-This is a dependency correction, not a verified environment lock. The SigLIP2 branch additionally needs compatible `timm`, `huggingface_hub`, `transformers`, and tokenizer dependencies. Its model configuration references `vit_large_patch16_siglip_512`, so the legacy `timm==0.6.13` pin must be revisited for that branch. Use the bundled `open_clip/` code when resolving its dependencies.
-
 ## Data preparation
 
 Download and extract the datasets separately. Each dataset root must contain a **`meta.json`** file, with image and mask paths relative to that root. No dataset or metadata-generation script is included in this snapshot.
